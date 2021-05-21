@@ -29,41 +29,83 @@ declare namespace CGT
 
         interface IWordWrapper
         {
-            Wrap(textField: Bitmap, text: string): string;
-            OverflowFinder: IOverflowFinder;
-        }
-      
-        /**
-         * What WordWrappers use to see when overflow would happen. 
-         * Must be subclassed.
-         */
-        class SpacialOverflowFinder implements ISpacialOverflowFinder
-        {
-            constructor(textField?: Bitmap);
-            get TextField(): Bitmap;
-            set TextField(value);
-            FindFor(text: string, line: string): boolean;
+            Wrap(args: IWordWrapArgs): string;
+            OverflowFinder: OverflowFinding.IOverflowFinder;
         }
 
-        /**
-         * Takes the space inside a message box (usually within a Bitmap)
-         * into account when finding overflow.
-         */
-        interface ISpacialOverflowFinder extends IOverflowFinder
+        namespace OverflowFinding
         {
-            TextField: Bitmap;
-        }
-
-        /**
-         * What WordWrappers use to see when overflow would happen.
-         */
-        interface IOverflowFinder
-        {
-            /** 
-             * Returns whether or not the line would get too long if the text
-             * were added.
+            /**
+             * What LineWrappers use to see when overflow would happen.
              */
-            FindFor(text: string, line: string): boolean;
+            interface IOverflowFinder
+            {
+                /** 
+                 * Returns whether or not the line would get too long if the text
+                 * were added.
+                 */
+                Find(args: IOverflowFindArgs): boolean;
+            }
+
+            interface IOverflowFindArgs
+            {
+                word: string;
+                line: string;
+                wordWrapArgs: IWordWrapArgs;
+            }
+
+            abstract class OverflowFinder implements IOverflowFinder
+            {
+                Find(args: IOverflowFindArgs): boolean 
+
+                /** Override this to decide how the finder defines wrap width */
+                protected abstract GetWrapWidth(args: IOverflowFindArgs): number;
+
+                /** Call this after you finish a full wrapping session. */
+                Refresh();
+            }
+
+            /**
+             * What WordWrappers use to see when overflow would happen on a physical basis.
+             * Must be subclassed.
+             */
+            class SpacialOverflowFinder implements ISpacialOverflowFinder
+            {
+                constructor(textField?: Bitmap);
+                get TextField(): Bitmap;
+                set TextField(value);
+                Find(args: IOverflowFindArgs): boolean;
+            }
+
+            /**
+             * Takes the space inside a message box (usually within a Bitmap)
+             * into account when finding overflow.
+             */
+            interface ISpacialOverflowFinder extends IOverflowFinder
+            {
+                TextField: Bitmap;
+            }
+
+            /**
+             * Helper for OverflowFinders to detect overflow
+             */
+            interface ITextMeasurer
+            {
+                MeasureFor(text: string): number
+            }
+
+            /**
+             * Measures text based on the space they take up in pixels on screen, with
+             * a history to inform its decisions.
+             */ 
+            class TextMeasurer implements ITextMeasurer
+            {
+                get History(): string[];
+            
+                MeasureFor(text: string): number;
+                RegisterInHistory(text: string);
+                ClearHistory();
+            }
         }
 
         /** 
@@ -73,34 +115,30 @@ declare namespace CGT
          * */
         class WordWrapper implements IWordWrapper
         {
-            Wrap(textField: Bitmap, text: string): string;
-            get NametagFormats(): RegExp[];
-
-            // These are the hooks you may want to override
-            /**
-             * For when you need to make any alterations to the text before wrapping it.
-             * @param text 
-             */
-            protected PrepareForWrapping(text: string): string
-
-            /**
-             * Wraps the (nametagless) text into a string array holding the lines.
-             * @param text 
-             */
-            protected AsWrappedLines(textField: Bitmap, text: string): string[]
-
-            /**
-             * Used to help decide where newlines should go to prevent overflow
-             */
-            protected WouldCauseOverflow(currentWord: string, currentLine: string): boolean
-
-            get OverflowFinder(): IOverflowFinder;
-            set OverflowFinder(value);
-
             /** A unique code for this particular wrapper class. */
+            static get WrapCode(): string;
             get WrapCode(): string;
 
-            constructor(overflowFinder?: IOverflowFinder);
+            Wrap(args: IWordWrapArgs): string;
+            get NametagFormats(): RegExp[];
+
+            get OverflowFinder(): OverflowFinding.IOverflowFinder;
+            set OverflowFinder(value);
+
+            constructor(overflowFinder?: OverflowFinding.IOverflowFinder);
+        }
+
+        /**
+         *  Default wrapper that just returns the input as given... In other words, 
+         * a false wrapper.
+         * */
+        class NullWordWrapper extends WordWrapper {}
+
+        /** Context for word-wrappers to do their thing. */
+        interface IWordWrapArgs
+        {
+            textField: Bitmap;
+            rawTextToWrap: string;
         }
 
         /**
@@ -122,34 +160,158 @@ declare namespace CGT
              * Decides how the wrapper detects nametags.
              * Set to the Yanfly format by default. 
              * */
-            get NametagFormats(): RegExp[];
+            
+            /** 
+             * You put these in the text where you want to guarantee a line break.
+             */
+             get LineBreakMarkers(): string[];
+
+             /** 
+             * Regexes (in string form) that define text that should NOT be treated as
+             * taking up space in the textbox. 
+             * */
+            get EmptyText(): string[];
+
+
+            // ~~~Special Rules~~~
+
+             /**
+             * How many words this makes sure each line has, when the text
+             * besides the nametag has enough.
+             */
+            get LineMinWordCount(): number;
+            set LineMinWordCount(value);
 
             /** 
              * Whether or not this aligns parentheses a certain way.
              */
             get ParenthesesAlignment(): boolean;
+            set ParenthesesAlignment(value);
 
-            /**
-             * How many words this makes sure each line has, when the text
-             * besides the nametag has enough.
-             */
-            get LineMinWordCount(): number;
+            /** What the wrapper should look for to tell words apart. */
+            get WordSeparator(): string;
+
+            /** Whether or not the output should include the WordSeparator. */
+            get SeparateWithSeparator(): boolean;
+
+            get WrapDescs(): boolean;
+
+            /** How wide mugshots are treated as being, in a unit decided by the active wrapper. */
+            get MugshotWidth(): number;
 
             /** 
-             * You'll want this to be set to true if your game's text is all in Japanese,
-             * or some other language that doesn't use English spaces.
-             */
-            get SplitWordsBetweenLines(): boolean;
+             * How much space there is between the mugshot and the text, in a unit 
+             * decided by the active wrapper. 
+             * */
+            get MugshotPadding(): number;
 
             /** 
-             * You put these in the text where you want to guarantee a line break.
-             */
-            get LineBreakMarkers(): string[];
-
-
+             * For the message box sides, helping prevent overflow while making sure the 
+             * wrapping isn't too tight. Also in a unit decided by the active wrapper.
+             *  */
+            get SidePadding(): number;
+            
         }
 
         let Params: CoreWrapParams;
+
+        interface ILineWrapper
+        {
+            WrapIntoLines(textField: Bitmap, nametaglessText: string): string[];
+        }
+
+        namespace WrapRules
+        {
+            /**
+             * Encapsulates algorithms that ensure that text follows a certain rule, like
+             * making sure each line follows a word count minimum.
+             */
+            interface IWrapRule<TInputOutput>
+            {
+                /**
+                 * Returns a copy of the input with this rule applied.
+                 */
+                AppliedTo(input: TInputOutput): TInputOutput;
+
+            }
+
+            /** 
+             * Contains default implementations of wrap rules. Best inherit from this and 
+             * override the hooks for your own custom rules.
+             */
+            abstract class WrapRule<TInputOutput> implements IWrapRule<TInputOutput> 
+            {
+                AppliedTo(input: TInputOutput): TInputOutput;
+
+                /** Override this to dictate whether this rule can apply to the input. */
+                protected CanApplyTo(input: TInputOutput): boolean;
+
+                /** Override this to handle the actual rule-applying */
+                protected ProcessInput(input: TInputOutput): TInputOutput;
+            }
+
+            /** 
+             * WrapRule that works with and returns arrays of strings. Meant to do their thing to 
+             * the results of the initial line-wrapping process.
+             * */
+            class LineWrapRule extends WrapRule<string[]> {}
+
+            /** Default post-rule for enforcing a minimum-words-per-line rule */
+            class WordPerLineMin extends LineWrapRule {}
+
+            /** Default post-rule for having certain parenthesis-having text aligned with spaces when needed */
+            class ParenthesisAlignment extends LineWrapRule {}
+
+            /** 
+             * WrapRule that works with and returns strings. Meant to do their thing to text
+             * BEFORE it goes through the initial line-wrapping process.
+             * */
+            class StringWrapRule extends WrapRule<string> {}
+
+            /** 
+             * Default pre-rule for removing all newlines from the input; the initial
+             * line-wrapping process should decide how lines are split
+             */
+            class WithoutBaseNewlines extends StringWrapRule {}
+
+            /** 
+             * Default pre-rule for removing trailing, leading, and consecutive spaces
+             * from the input.
+             */ 
+            class WithoutExtraSpaces extends StringWrapRule {}
+
+            interface IWrapRuleApplier
+            {
+                /** Applies rules meant for the text before it gets wrapped into lines. */
+                ApplyPreRulesTo(text: string): string;
+                /** Applies rules means for the text after the initial line-wrapping. */
+                ApplyPostRulesTo(lines: string[]): string[];
+
+            }
+
+            class WrapRuleApplier implements IWrapRuleApplier
+            {
+                protected preWrapRules: Set<StringWrapRule>;
+                protected postWrapRules: Set<LineWrapRule>;
+
+                ApplyPreRulesTo(text: string): string;
+
+                /** Exists to cut down on boilerplate code */
+                protected ApplyRules<TInput, TRuleType extends WrapRule<TInput>>(rules: Set<TRuleType>, 
+                    input: TInput): TInput;
+                
+                ApplyPostRulesTo(lines: string[]): string[];
+
+                RegisterPreRule(rule: StringWrapRule);
+
+                RegisterPostRule(rule: LineWrapRule);
+
+                RemovePreRule(rule: StringWrapRule);
+
+                RemovePostRule(rule: LineWrapRule);
+            
+            }
+        }
 
         /** 
          * Sets the active wrapper that matches the passed wrap mode. 

@@ -2,7 +2,7 @@ export class WrapParams
 {
     /** How many pixels wide we treat the mugshots as being. */
     get MugshotWidth(): number { return this.mugshotWidth; };
-    private mugshotWidth = 144; 
+    private mugshotWidth: number = 144; 
     set MugshotWidth(value) { this.mugshotWidth = value; }
 
     /** 
@@ -10,8 +10,12 @@ export class WrapParams
      * text as being.
      */
     get MugshotPadding(): number { return this.mugshotPadding; }
-    private mugshotPadding = 20;
+    private mugshotPadding: number = 20;
     set MugshotPadding(value) { this.mugshotPadding = value; }
+
+    get SidePadding(): number {return this.borderWidth; };
+    private borderWidth: number = 10;
+    set SidePadding(value) { this.borderWidth = value; }
 
     static CreateFrom(stringifiedParam: string): WrapParams
     {
@@ -32,7 +36,7 @@ class WrapParamsFactory extends ParamFactory<WrapParams, ParsedWrapParam>
     {
         this.Params.MugshotWidth = Number(this.parsedParam.MugshotWidth);
         this.Params.MugshotPadding = Number(this.parsedParam.MugshotPadding);
-
+        this.Params.SidePadding = Number(this.parsedParam.SidePadding);
     }
 }
 
@@ -40,6 +44,7 @@ interface ParsedWrapParam
 {
     MugshotWidth: number;
     MugshotPadding: number;
+    SidePadding: number;
 }
 
 WrapParams.factory = new WrapParamsFactory();

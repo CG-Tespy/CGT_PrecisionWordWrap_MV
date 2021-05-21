@@ -1,39 +1,29 @@
-let SpacialOverflowFinder = CGT.WWCore.SpacialOverflowFinder;
+type IOverflowFindArgs = CGT.WWCore.OverflowFinding.IOverflowFindArgs;
 
-export class PrecisionOverflowFinder extends SpacialOverflowFinder
+export class PrecisionOverflowFinder extends CGT.WWCore.OverflowFinding.OverflowFinder
 {
-    FindFor(text: string, line: string): boolean
-    {
-        let lineWidth = this.TextField.measureTextWidth(line);
-        let wordWidth = this.TextField.measureTextWidth(text);
-        let combinedWidth = lineWidth + wordWidth;
-
-        let availableSpace = this.GetWrapWidth();
-
-        return combinedWidth > availableSpace;
-    }
-
-    protected GetWrapWidth(): number
+    protected GetWrapWidth(args: IOverflowFindArgs): number
     {
         let mugshotIsThere = $gameMessage.faceName() !== '';
 
         if (mugshotIsThere)
-            return this.TightWrapWidth();
+            return this.TightWrapWidth(args);
         else
-            return this.FullWrapWidth();
-
+            return this.FullWrapWidth(args);
     }
 
-    protected TightWrapWidth(): number
+    protected TightWrapWidth(args: IOverflowFindArgs): number
     {
         let offset = this.Params.MugshotWidth + this.Params.MugshotPadding;
-        return this.FullWrapWidth() - offset;
+        return this.FullWrapWidth(args) - offset;
     }
 
-    protected FullWrapWidth(): number
+    protected FullWrapWidth(args: IOverflowFindArgs): number
     {
-        return this.TextField.width;
+        let textField = args.wordWrapArgs.textField;
+        let allPadding = (this.Params.SidePadding * 2);
+        return textField.width - allPadding;
     }
 
-    protected get Params(): CGT.PrWoWr.WrapParams { return CGT.PrWoWr.Params; }
+    protected get Params(): CGT.WWCore.CoreWrapParams { return CGT.WWCore.Params; }
 }

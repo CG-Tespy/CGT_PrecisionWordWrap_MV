@@ -17,6 +17,12 @@ declare namespace CGT
              * text as being.
              */
             get MugshotPadding(): number;
+
+            /** 
+             * Invisible padding on the sides of the message box, helping prevent overflow
+             * while keeping the results from being too tight.
+             */
+            get SidePadding(): number;
         }
 
         let Params: WrapParams;
