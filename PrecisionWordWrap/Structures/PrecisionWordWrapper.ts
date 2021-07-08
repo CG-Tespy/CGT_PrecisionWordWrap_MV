@@ -1,21 +1,18 @@
 import { PrecisionOverflowFinder } from './PrecisionOverflowFinder';
+import { PrecisionLineWrapper } from './PrecisionLineWrapper';
+
+// MAY BE OBSOLETE
 
 // Fetch dependencies
 let WrapCoreShared = CGT.WWCore.Shared;
 let Regexes = WrapCoreShared.Regexes;
 let Strings = WrapCoreShared.Strings;
-let spaceAsSeparator = Regexes.spaceAsSeparator;
-let empty = Strings.emptyString;
-let singleSpace = Strings.singleSpace;
 let WordWrapper = CGT.WWCore.WordWrapper;
-let ArrayEx = CGT.Core.Extensions.ArrayEx;
-
-
 
 export class PrecisionWordWrapper extends WordWrapper
 {
-    get WrapCode(): string { return "precision"; }
-
-    
+    get WrapCode(): string { return PrecisionWordWrapper.WrapCode; }
+    static get WrapCode(): string { return this.wrapCode; }
+    private static wrapCode: string = "precision";
 
 }

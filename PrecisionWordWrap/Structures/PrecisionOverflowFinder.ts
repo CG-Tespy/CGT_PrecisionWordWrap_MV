@@ -1,29 +1,22 @@
-type IOverflowFindArgs = CGT.WWCore.OverflowFinding.IOverflowFindArgs;
+import { PrecisionTextMeasurer } from './PrecisionTextMeasurer';
+let OverflowFinder = CGT.WWCore.Overflow.OverflowFinder;
 
-export class PrecisionOverflowFinder extends CGT.WWCore.OverflowFinding.OverflowFinder
+export class PrecisionOverflowFinder extends OverflowFinder
 {
-    protected GetWrapWidth(args: IOverflowFindArgs): number
-    {
-        let mugshotIsThere = $gameMessage.faceName() !== '';
-
-        if (mugshotIsThere)
-            return this.TightWrapWidth(args);
-        else
-            return this.FullWrapWidth(args);
-    }
-
-    protected TightWrapWidth(args: IOverflowFindArgs): number
-    {
-        let offset = this.Params.MugshotWidth + this.Params.MugshotPadding;
-        return this.FullWrapWidth(args) - offset;
-    }
-
-    protected FullWrapWidth(args: IOverflowFindArgs): number
+    protected FullWrapSpace(args: IOverflowFindArgs): number
     {
         let textField = args.wordWrapArgs.textField;
-        let allPadding = (this.Params.SidePadding * 2);
-        return textField.width - allPadding;
+        return textField.width;
     }
 
-    protected get Params(): CGT.WWCore.CoreWrapParams { return CGT.WWCore.Params; }
+    protected get Params(): CoreWrapParams { return CGT.WWCore.Params; }
+
+    constructor()
+    {
+        super();
+        this.textMeasurer = new PrecisionTextMeasurer();
+    }
 }
+
+type IOverflowFindArgs = CGT.WWCore.Overflow.IOverflowFindArgs;
+type CoreWrapParams = CGT.WWCore.CoreWrapParams;

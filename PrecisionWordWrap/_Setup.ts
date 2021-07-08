@@ -1,21 +1,23 @@
 import { PrecisionOverflowFinder } from './Structures/PrecisionOverflowFinder';
 import { PrecisionWordWrapper } from './Structures/PrecisionWordWrapper';
-import { WrapParams } from './Structures/WrapParams';
-import { pluginParams } from './PluginParams/_Setup';
+import { PrecisionLineWrapper } from './Structures/PrecisionLineWrapper';
 
 export let PrWoWr = 
 {
     PrecisionOverflowFinder: PrecisionOverflowFinder,
     PrecisionWordWrapper: PrecisionWordWrapper,
-    WrapParams: WrapParams,
-    Params: pluginParams
 };
+
+let WordWrapper = CGT.WWCore.WordWrapper;
 
 RegisterWrapper();
 
 function RegisterWrapper()
 {
-    let precisionWrapper = new PrecisionWordWrapper();
+    let lineWrapper = new PrecisionLineWrapper();
+    let precisionWrapper = new WordWrapper(lineWrapper);
+    precisionWrapper.WrapCode = "precision";
+
     CGT.WWCore.RegisterWrapper(precisionWrapper);
 }
 

@@ -4,7 +4,7 @@ declare namespace CGT
     {
         class PrecisionWordWrapper extends CGT.WWCore.WordWrapper
         {
-            constructor(overflowFinder?: CGT.WWCore.SpacialOverflowFinder);
+            constructor(overflowFinder?: CGT.WWCore.WordWrapper);
         }
 
         class WrapParams
