@@ -5,6 +5,8 @@
 Requires version 1.01.01+ of the CGT WordWrapCore plugin. To have this set as the wrapper
 right away, set the WordWrapCore's Wrapper param to "precision".
 
+This does not yet support desc-wrapping.
+
 */
 
 import { PrWoWr } from './PrecisionWordWrap/_Setup';

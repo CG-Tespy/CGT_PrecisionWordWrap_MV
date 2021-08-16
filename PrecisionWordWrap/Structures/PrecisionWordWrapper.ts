@@ -1,12 +1,6 @@
-import { PrecisionOverflowFinder } from './PrecisionOverflowFinder';
-import { PrecisionLineWrapper } from './PrecisionLineWrapper';
-
-// MAY BE OBSOLETE
-
 // Fetch dependencies
+// MAY BE OBSOLETE
 let WrapCoreShared = CGT.WWCore.Shared;
-let Regexes = WrapCoreShared.Regexes;
-let Strings = WrapCoreShared.Strings;
 let WordWrapper = CGT.WWCore.WordWrapper;
 
 export class PrecisionWordWrapper extends WordWrapper

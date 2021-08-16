@@ -59,6 +59,13 @@ declare namespace CGT
                 
                 Find(args: IOverflowFindArgs): boolean 
 
+                /**
+                 * How much space there is for text in a mugshotless textbox, after taking into
+                 * account non-mugshot-related padding params. This is in a unit decided by the finder.
+                 * @param args 
+                 */
+                protected abstract RegularWrapSpace(args: IOverflowFindArgs): number;
+                
                 /** Returns how much space there is to have text on a single line. */
                 protected GetWrapSpace(args: IOverflowFindArgs): number;
 
@@ -188,11 +195,11 @@ declare namespace CGT
             // ~~~Special Rules~~~
 
              /**
-             * How many words this makes sure each line has, when the text
+             * How many characters this makes sure each line has, when the text
              * besides the nametag has enough.
              */
-            get LineMinWordCount(): number;
-            set LineMinWordCount(value);
+            get LineMinCharCount(): number;
+            set LineMinCharCount(value);
 
             /** 
              * Whether or not this aligns parentheses a certain way.
@@ -202,31 +209,37 @@ declare namespace CGT
 
             /** What the wrapper should look for to tell words apart. */
             get WordSeparator(): string;
+            set WordSeparator(value);
 
-            /** Whether or not the output should include the WordSeparator. */
-            get SeparateWithSeparator(): boolean;
-
+            /** Whether or not the wrapper should wrap descriptions. */
             get WrapDescs(): boolean;
+            set WrapDescs(value);
 
             /** How wide mugshots are treated as being, in a unit decided by the active wrapper. */
             get MugshotWidth(): number;
+            set MugshotWidth(value);
 
             /** 
              * How much space there is between the mugshot and the text, in a unit 
              * decided by the active wrapper. 
              * */
             get MugshotPadding(): number;
+            set MugshotPadding(value);
 
             /** For the message box sides, in a wrapper-decided unit. */
             get SidePadding(): number;
+            set SidePadding(value);
+
+            /** 
+             * Multiplier for how much bigger than usual that bolded or italicised letters
+             * are treated as being. 1.10 = 110% bigger, 1.34 = 134% bigger, etc.
+             */
+            get BoldItalicWidthMod(): number;
+            set BoldItalicWidthMod(value);
             
         }
 
         let Params: CoreWrapParams;
-
-        
-
-        
 
         namespace WrapRules
         {
