@@ -1,4 +1,4 @@
-# CGT_PrecisionWordWrap_MV
+# CGT_PrecisionWordWrap_MV/Ajustelíneas Preciso
 **English:** Wraps based on the space inside the message box, as well as the size of the text inside it.
 
 **Español:** Ajuste basado en el espacio en el cuadro de diálogo, y los tamaños del texto dentro de el.
