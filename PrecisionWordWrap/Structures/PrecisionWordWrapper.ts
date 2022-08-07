@@ -1,5 +1,3 @@
-// Fetch dependencies
-// MAY BE OBSOLETE
 let WrapCoreShared = CGT.WWCore.Shared;
 let WordWrapper = CGT.WWCore.WordWrapper;
 

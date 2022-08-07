@@ -21,4 +21,4 @@ function RegisterWrapper()
     CGT.WWCore.RegisterWrapper(precisionWrapper);
 }
 
-CGT.WWCore.UpdateActiveWrapper(); // For when this plugin's supposed to handle wrapping
+CGT.WWCore.UpdateActiveWrappers(); // For when this plugin's supposed to handle wrapping

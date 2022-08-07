@@ -1,0 +1,2 @@
+- Make sure that this works with WordWrapCore v3
+- Translate the jsdocs to Spanish
