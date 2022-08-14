@@ -6,7 +6,8 @@ export class PrecisionOverflowFinder extends OverflowFinder
     protected RegularWrapSpace(args: IOverflowFindArgs): number
     {
         let fullSpace = this.FullWrapSpace(args);
-        let allSidePadding = this.Params.SidePadding * 2;
+        let spacing = args.wordWrapArgs.spacing;
+        let allSidePadding = spacing.SidePadding * 2;
         return fullSpace - allSidePadding;
     }
 
