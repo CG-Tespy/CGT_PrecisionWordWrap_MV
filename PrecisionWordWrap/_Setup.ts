@@ -1,10 +1,16 @@
 import { PrecisionOverflowFinder } from './Structures/PrecisionOverflowFinder';
 import { PrecisionWordWrapper } from './Structures/PrecisionWordWrapper';
 import { PrecisionLineWrapper } from './Structures/PrecisionLineWrapper';
+import { PrecisionTextMeasurer } from './Structures/PrecisionTextMeasurer';
+import { PrecisionUnderflowCascader } from './Structures/PrecisionUnderflowCascader';
 
 export let PrWoWr = 
 {
+    PrecisionLineWrapper: PrecisionLineWrapper,
     PrecisionOverflowFinder: PrecisionOverflowFinder,
+    PrecisionTextMeasurer: PrecisionTextMeasurer,
+    PrecisionUnderflowCascader: PrecisionUnderflowCascader,
+
     PrecisionWordWrapper: PrecisionWordWrapper,
 };
 
